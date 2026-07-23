@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Bar Przykład — Ormiańska Kuchnia (Demo)</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #FFD700;
+    --orange: #f9a03f;
+    --brown-dark: #3b1a08;
+    --brown-mid: #6B2E0E;
+    --brown-light: #8B4513;
+    --green: #2A6B2A;
+    --red: #CC2200;
+  }
+
+  body {
+    font-family: 'Segoe UI', -apple-system, sans-serif;
+    background: radial-gradient(ellipse at top, #5a2e0e 0%, #1a0800 100%);
+    color: #FFF8DC;
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+
+  /* ===== PROMO MODE ===== */
+  #promo-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 15px 30px;
+    min-height: 100vh;
+  }
+
+  .logo-area { text-align: center; margin-bottom: 15px; }
+  .logo-area h1 {
+    font-size: clamp(2.2rem, 8vw, 4.2rem);
+    color: var(--gold);
+    text-shadow: 3px 3px 0 var(--brown-mid), 6px 6px 12px rgba(0,0,0,0.5);
+    letter-spacing: 2px;
+    line-height: 1.1;
+  }
+  .logo-area .sub {
+    font-size: clamp(0.95rem, 3vw, 1.3rem);
+    color: #FFE4B5;
+    font-style: italic;
+    margin-top: 5px;
+  }
+
+  /* Promo text bubble */
+  .promo-bubble {
+    background: rgba(0,0,0,0.5);
+    border: 2px solid var(--gold);
+    border-radius: 20px;
+    padding: 18px 24px;
+    margin: 10px 0 18px;
+    text-align: center;
+    max-width: 700px;
+    width: 100%;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.4s;
+  }
+  .promo-bubble p {
+    font-size: clamp(1rem, 3.5vw, 1.35rem);
+    line-height: 1.5;
+    color: #FFE4B5;
+  }
+
+  /* Menu grid */
+  .menu-section { width: 100%; max-width: 700px; margin-bottom: 18px; }
+  .menu-section h2 {
+    color: var(--gold);
+    font-size: clamp(1.1rem, 4vw, 1.6rem);
+    text-align: center;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+  }
+  .menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 10px;
+  }
+  .menu-card {
+    background: rgba(139,69,19,0.5);
+    border: 1.5px solid var(--gold);
+    border-radius: 16px;
+    padding: 12px 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.15s, background 0.15s;
+  }
+  .menu-card:active { transform: scale(0.96); background: rgba(160,82,45,0.7); }
+  .menu-card h4 { color: var(--gold); font-size: clamp(0.8rem, 2.5vw, 1rem); margin-bottom: 4px; }
+  .menu-card .price { font-size: clamp(1rem, 3vw, 1.2rem); font-weight: bold; color: #fff; }
+  .menu-card .tag {
+    display: inline-block; margin-top: 5px; font-size: 0.7rem;
+    padding: 2px 8px; border-radius: 10px;
+  }
+  .tag-hot { background: #8B0000; color: #ffa; }
+  .tag-sweet { background: #5a2e8b; color: #ffd; }
+
+  /* Info bar */
+  .info-bar {
+    display: flex; flex-wrap: wrap; justify-content: center;
+    gap: 15px; width: 100%; max-width: 700px;
+    background: rgba(0,0,0,0.4); border: 1px solid var(--gold);
+    border-radius: 16px; padding: 12px 20px; margin-bottom: 20px;
+  }
+  .info-item { text-align: center; }
+  .info-item .icon { font-size: 1.4rem; display: block; }
+  .info-item .label { color: var(--gold); font-weight: bold; font-size: 0.85rem; }
+  .info-item .val { font-size: 0.85rem; }
+
+  /* BIG CALL-TO-ACTION button */
+  .cta-btn {
+    background: linear-gradient(145deg, var(--gold), var(--orange));
+    border: none; border-radius: 50px;
+    padding: 20px 50px;
+    font-size: clamp(1.3rem, 4vw, 1.8rem);
+    font-weight: bold;
+    color: var(--brown-dark);
+    cursor: pointer;
+    box-shadow: 0 8px 25px rgba(249,160,63,0.5), 0 0 0 4px rgba(255,215,0,0.3);
+    animation: pulse-cta 2s infinite;
+    letter-spacing: 1px;
+    transition: transform 0.1s;
+  }
+  .cta-btn:active { transform: scale(0.97); }
+  @keyframes pulse-cta {
+    0%,100% { box-shadow: 0 8px 25px rgba(249,160,63,0.5), 0 0 0 4px rgba(255,215,0,0.3); }
+    50% { box-shadow: 0 8px 35px rgba(249,160,63,0.8), 0 0 0 10px rgba(255,215,0,0.15); }
+  }
+
+  .phone { font-size: clamp(1.1rem, 3.5vw, 1.4rem); color: var(--gold); text-align: center; margin-top: 10px; }
+
+  /* ===== DIALOG MODE ===== */
+  #dialog-screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 30px 20px;
+    text-align: center;
+  }
+
+  .dialog-logo { font-size: 2.5rem; margin-bottom: 5px; }
+  .dialog-logo h2 { font-size: clamp(1.5rem, 5vw, 2.2rem); color: var(--gold); letter-spacing: 2px; }
+
+  /* Status indicator */
+  .status-ring {
+    width: min(260px, 65vw);
+    height: min(260px, 65vw);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 30px 0;
+    position: relative;
+    transition: all 0.3s;
+    cursor: pointer;
+    border: 5px solid var(--gold);
+    background: rgba(0,0,0,0.4);
+  }
+  .status-ring .mic-icon { font-size: clamp(4rem, 15vw, 6rem); line-height: 1; }
+  .status-ring .status-label {
+    font-size: clamp(1rem, 3.5vw, 1.3rem);
+    font-weight: bold;
+    margin-top: 10px;
+    letter-spacing: 1px;
+  }
+
+  /* States */
+  .status-ring.idle {
+    background: linear-gradient(145deg, rgba(255,215,0,0.2), rgba(249,160,63,0.2));
+    border-color: var(--gold);
+    animation: pulse-idle 2.5s infinite;
+  }
+  @keyframes pulse-idle {
+    0%,100% { box-shadow: 0 0 0 0 rgba(255,215,0,0.4); }
+    50% { box-shadow: 0 0 0 18px rgba(255,215,0,0); }
+  }
+
+  .status-ring.listening {
+    background: linear-gradient(145deg, rgba(0,150,0,0.3), rgba(0,200,0,0.2));
+    border-color: #44ff44;
+    animation: pulse-listen 1s infinite;
+  }
+  @keyframes pulse-listen {
+    0%,100% { box-shadow: 0 0 0 0 rgba(0,255,0,0.5); }
+    50% { box-shadow: 0 0 0 22px rgba(0,255,0,0); }
+  }
+
+  .status-ring.speaking {
+    background: linear-gradient(145deg, rgba(200,100,0,0.3), rgba(255,160,0,0.2));
+    border-color: var(--orange);
+    animation: pulse-speak 0.7s infinite alternate;
+  }
+  @keyframes pulse-speak {
+    from { box-shadow: 0 0 15px rgba(255,160,0,0.4); }
+    to { box-shadow: 0 0 35px rgba(255,160,0,0.8); }
+  }
+
+  /* Last phrase shown */
+  .last-text {
+    max-width: 560px; width: 100%;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,215,0,0.3);
+    border-radius: 16px;
+    padding: 15px 20px;
+    font-size: clamp(1rem, 3vw, 1.2rem);
+    line-height: 1.5;
+    color: #FFE4B5;
+    min-height: 60px;
+    display: flex; align-items: center; justify-content: center;
+    transition: opacity 0.3s;
+  }
+
+  .stop-btn {
+    margin-top: 25px;
+    background: transparent;
+    border: 2px solid rgba(255,100,100,0.6);
+    color: rgba(255,150,150,0.8);
+    border-radius: 30px;
+    padding: 10px 35px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .stop-btn:hover, .stop-btn:active {
+    background: rgba(200,0,0,0.3);
+    border-color: #ff6666;
+    color: #ffaaaa;
+  }
+</style>
+</head>
+<body>
+
+<!-- Demo notice: all data below is fictional (see data/knowledge.json). -->
+
+<!-- ====== PROMO SCREEN ====== -->
+<div id="promo-screen">
+  <div class="logo-area">
+    <h1>🏺 BAR PRZYKŁAD</h1>
+    <div class="sub">Tradycyjna kuchnia ormiańska (demo)</div>
+  </div>
+
+  <div class="promo-bubble">
+    <p id="promo-text">Witamy w Bar Przykład! Oryginalne ormiańskie paszteciki — chrupiące, ciepłe, za 8 zł!</p>
+  </div>
+
+  <div class="menu-section">
+    <h2>🍽️ NASZE SMAKI — 8 ZŁ</h2>
+    <div class="menu-grid" id="menu-grid"></div>
+  </div>
+
+  <div class="info-bar">
+    <div class="info-item">
+      <span class="icon">🕐</span>
+      <span class="label">Godziny</span>
+      <span class="val">8:00–22:00</span>
+    </div>
+    <div class="info-item">
+      <span class="icon">📍</span>
+      <span class="label">Adres</span>
+      <span class="val">Przykładowa 1</span>
+    </div>
+    <div class="info-item">
+      <span class="icon">🚚</span>
+      <span class="label">Dowóz</span>
+      <span class="val">10 zł</span>
+    </div>
+    <div class="info-item">
+      <span class="icon">💬</span>
+      <span class="label">Telefon</span>
+      <span class="val">+48 000 000 000</span>
+    </div>
+  </div>
+
+  <button class="cta-btn" onclick="startDialog()">🎤 ZAPYTAJ MNIE!</button>
+  <div class="phone" style="margin-top:18px">📞 +48 000 000 000</div>
+</div>
+
+<!-- ====== DIALOG SCREEN ====== -->
+<div id="dialog-screen">
+  <div class="dialog-logo">
+    <h2>🏺 BAR PRZYKŁAD</h2>
+  </div>
+
+  <div class="status-ring idle" id="status-ring" onclick="onRingClick()">
+    <span class="mic-icon" id="mic-icon">🎤</span>
+    <span class="status-label" id="status-label">Naciśnij</span>
+  </div>
+
+  <div class="last-text" id="last-text">Zapytaj o menu, ceny, składniki, godziny lub dowóz.</div>
+
+  <button class="stop-btn" onclick="stopDialog()">✕ Zakończ rozmowę</button>
+</div>
+
+<script>
+// This page is a standalone browser demo of the assistant's NLP logic —
+// it uses the browser's native Web Speech API (SpeechRecognition +
+// speechSynthesis) and needs no server or offline models. It mirrors, in
+// JavaScript, the same keyword-matching rules as src/nlp/processor.py.
+// The production kiosk (src/main.py) instead runs fully offline via
+// Vosk (STT) and Piper (TTS) — see README.
+
+// ========== KNOWLEDGE BASE (mirrors data/knowledge.json) ==========
+const MENU = [
+  { id:"pastry_mushroom",   name:"Z grzybami",      price:8, hot:true,  sweet:false, desc:"Leśne grzyby, kremowy sos. Najostrzejszy (5/5)." },
+  { id:"pastry_beef",       name:"Z wołowiną",      price:8, hot:true,  sweet:false, desc:"Soczysta wołowina z cebulą i majerankiem." },
+  { id:"pastry_potato",     name:"Ziemniaczany",    price:8, hot:false, sweet:false, desc:"Ziemniaki z ziołami, sos czosnkowy. Klasyk!" },
+  { id:"pastry_cabbage",    name:"Z kapustą",       price:8, hot:false, sweet:false, desc:"Duszona kapusta. Najmniej kalorii." },
+  { id:"pastry_lentil",     name:"Soczewicowy",     price:8, hot:false, sweet:false, desc:"Soczewica, kolendra. Najdelikatniejszy (1/5)." },
+  { id:"pastry_nutella",    name:"Z nutellą",       price:8, hot:false, sweet:true,  desc:"Słodka wersja z kremem czekoladowo-orzechowym." },
+  { id:"pastry_curd_honey", name:"Z twarogiem",     price:8, hot:false, sweet:true,  desc:"Twaróg z miodem. Tradycyjny słodki wariant." },
+];
+
+const FAQ = [
+  { keys:["cześć","hej","dzień dobry","witaj","czesc"],
+    ans:"Cześć! Witam serdecznie w Bar Przykład. Co cię dziś interesuje — menu, ceny, a może składniki?" },
+  { keys:["menu","co macie","smaki","co jest","lista","wszystko"],
+    ans:"Mamy 7 smaków pasztecików, każdy po 8 zł! Słone: z grzybami, z wołowiną, ziemniaczany, z kapustą i soczewicowy. Słodkie: z nutellą i z twarogiem. Co polecić?" },
+  { keys:["cena","ile kosztuje","ile kosztują","ile płacę","cennik"],
+    ans:"Każdy pasztecik kosztuje tylko 8 złotych. Dowóz to 10 złotych." },
+  { keys:["co to","czym jest","pasztecik co"],
+    ans:"Pasztecik to ormiańska przekąska — chrupiące ciasto z jogurtu i mąki, nadziewane różnymi farszami, smażone na złoty kolor. Podajemy na ciepło!" },
+  { keys:["polecasz","polecacie","co wziąć","co wybrać","co wziac","co wybrac"],
+    ans:"Najbardziej popularny jest ziemniaczany i soczewicowy! Ze słodkich — z twarogiem i miodem jest przepyszny. Lubisz ostrzejsze?" },
+  { keys:["ostre","ostry","pikantne","pikantny","ostrość"],
+    ans:"Najostrzejszy — pasztecik z grzybami, pięć na pięć! Łagodniejszy z wołowiną, cztery na pięć. Zupełnie łagodny soczewicowy, jeden na pięć." },
+  { keys:["słodkie","slodkie","deser","słodki"],
+    ans:"Mamy dwa słodkie smaki: pasztecik z nutellą i z twarogiem. Oba za 8 złotych!" },
+  { keys:["dzieci","dziecko","dla dziecka","dziecku"],
+    ans:"Dla dzieci polecamy pasztecik soczewicowy — najłagodniejszy, aromatyczny i pyszny!" },
+  { keys:["alergen","alergeny","gluten","orzechy","alergia","uczulenie"],
+    ans:"Ciasto zawiera gluten i jajka. Pasztecik z nutellą zawiera orzechy. Wszystkie smaki słone są wegetariańskie, ale nie wegańskie." },
+  { keys:["kalorie","kcal","dieta","kaloryczny"],
+    ans:"Od 220 do 270 kalorii. Najmniej kaloryczny to pasztecik z kapustą, najbardziej z nutellą." },
+  { keys:["sosy","sos","jaki sos"],
+    ans:"Podajemy trzy sosy własnej produkcji: jogurtowo-miętowy, pomidorowy ostry i czosnkowo-koperkowy. Polecam czosnkowy!" },
+  { keys:["godziny","kiedy","otwarte","czynne","otwarcie"],
+    ans:"Jesteśmy otwarci codziennie od ósmej do dwudziestej drugiej, siedem dni w tygodniu!" },
+  { keys:["adres","gdzie","ulica","lokalizacja","dojazd"],
+    ans:"Znajdziesz nas przy ulicy Przykładowej 1. Telefon: +48 000 000 000." },
+  { keys:["dowóz","dowoz","dostawa","na wynos","dowozicie"],
+    ans:"Tak, dowozimy! Koszt dowozu to 10 złotych. Zamówienia przyjmujemy telefonicznie: +48 000 000 000." },
+  { keys:["płatność","płatności","karta","gotówka","blik"],
+    ans:"Akceptujemy gotówkę, kartę i blika. Bez problemu!" },
+  { keys:["rekord","wyzwanie","konkurs","ściana chwały"],
+    ans:"Wielkie Wyzwanie: zjedz 10 sztuk w 15 minut — darmowy posiłek i wpis na Ścianę Chwały! Tylko dla osób powyżej 16 lat. Zgłoszenia dzień wcześniej." },
+  { keys:["parking","parkowanie","auto"],
+    ans:"Przed lokalem jest bezpłatny parking dla gości!" },
+  { keys:["dziękuję","dziekuje","dzięki","dzieki","do widzenia","na razie","pa","żegnaj"],
+    ans:"Dziękuję, zapraszam serdecznie! Smacznego i do zobaczenia w Bar Przykład!" },
+];
+
+const PROMO_TEXTS = [
+  "🏺 Oryginalne ormiańskie paszteciki — chrupiące, ciepłe, za 8 zł!",
+  "🎉 7 wyjątkowych smaków — od słonych po słodkie. Spróbuj już dziś!",
+  "🔥 Pasztecik z grzybami — nasz bestseller! Ostry i chrupiący.",
+  "🍯 Pasztecik z twarogiem i miodem — tradycyjny słodki wariant!",
+  "🚚 Dowozimy! Zadzwoń: +48 000 000 000. Koszt dowozu 10 zł.",
+  "💬 Masz pytania? Naciśnij przycisk i porozmawiaj z naszym AI!",
+  "⏰ Otwarci codziennie 8:00–22:00. Zapraszamy!",
+];
+
+const GOODBYE_KEYS = ["dziękuję","dziekuje","dzięki","dzieki","do widzenia","na razie","pa","żegnaj"];
+
+// ========== STATE ==========
+let state = "PROMO"; // PROMO | GREETING | LISTENING | SPEAKING | STOPPING
+let promoTimer = null;
+let promoIdx = 0;
+let silenceTimer = null;
+let recognition = null;
+let dialogActive = false;
+
+// ========== RENDER MENU ==========
+function renderMenu() {
+  document.getElementById('menu-grid').innerHTML = MENU.map(m => `
+    <div class="menu-card" onclick="askMenu('${m.id}')">
+      <h4>${m.name}</h4>
+      <div class="price">${m.price} zł</div>
+      <span class="tag ${m.sweet?'tag-sweet':'tag-hot'}">${m.sweet?'🍯 słodki':m.hot?'🌶 ostry':'🌿 łagodny'}</span>
+    </div>
+  `).join('');
+}
+
+function askMenu(id) {
+  const m = MENU.find(x=>x.id===id);
+  if (!m || state !== "PROMO") return;
+  startDialog(m.desc + " Cena: " + m.price + " zł. Chcesz dowiedzieć się więcej?");
+}
+
+// ========== NLP ==========
+function getResponse(text) {
+  const t = text.toLowerCase().trim();
+  for (const pair of FAQ) {
+    if (pair.keys.some(k => t.includes(k))) return pair.ans;
+  }
+  for (const m of MENU) {
+    if (t.includes(m.name.toLowerCase()) || t.includes(m.id)) {
+      return m.name + " — " + m.desc + " Cena: " + m.price + " zł.";
+    }
+  }
+  return "Nie rozumiem pytania. Możesz zapytać o menu, ceny, składniki, godziny lub dowóz!";
+}
+
+function isGoodbye(text) {
+  const t = text.toLowerCase();
+  return GOODBYE_KEYS.some(k => t.includes(k));
+}
+
+// ========== PROMO LOOP ==========
+function startPromo() {
+  clearTimeout(promoTimer);
+  showPromoText(PROMO_TEXTS[promoIdx % PROMO_TEXTS.length]);
+  promoTimer = setTimeout(nextPromo, 14000);
+}
+
+function nextPromo() {
+  promoIdx++;
+  const txt = PROMO_TEXTS[promoIdx % PROMO_TEXTS.length];
+  showPromoText(txt);
+  speak(txt.replace(/[🏺🎉🔥🍯🚚💬⏰]/gu, '').trim(), state === "PROMO");
+  promoTimer = setTimeout(nextPromo, 14000);
+}
+
+function showPromoText(txt) {
+  const el = document.getElementById('promo-text');
+  el.parentElement.style.opacity = '0';
+  setTimeout(() => { el.textContent = txt; el.parentElement.style.opacity = '1'; }, 300);
+}
+
+// ========== TTS (browser Web Speech API) ==========
+function getPolishVoice() {
+  const voices = speechSynthesis.getVoices();
+  const isNeural = v => v.name.includes('Natural') || v.name.includes('Premium') || v.name.includes('Enhanced') || v.name.includes('Online');
+  const isPolish = v => v.lang === 'pl-PL' || v.lang.startsWith('pl');
+  const isZosia = v => v.name.includes('Zofia') || v.name.includes('Zosia') || v.name.includes('Gosia');
+  return voices.find(v => isZosia(v) && isNeural(v))
+      || voices.find(v => isZosia(v))
+      || voices.find(v => isPolish(v) && isNeural(v))
+      || voices.find(v => isPolish(v))
+      || null;
+}
+
+function speak(text, allowed, onDone) {
+  if (!window.speechSynthesis || allowed === false) { if (onDone) onDone(); return; }
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'pl-PL'; u.rate = 1.0; u.pitch = 1.0;
+  const voice = getPolishVoice();
+  if (voice) u.voice = voice;
+  u.onend = () => { if (onDone) onDone(); };
+  u.onerror = () => { if (onDone) onDone(); };
+  speechSynthesis.speak(u);
+}
+
+// ========== DIALOG MODE ==========
+function startDialog(greeting) {
+  clearTimeout(promoTimer);
+  speechSynthesis.cancel();
+  dialogActive = true;
+  state = "GREETING";
+
+  document.getElementById('promo-screen').style.display = 'none';
+  document.getElementById('dialog-screen').style.display = 'flex';
+
+  const welcomeText = greeting || "Słucham! Co cię dziś interesuje? Mogę opowiedzieć o menu, cenach, składnikach lub dowozie!";
+  setStatus('speaking', '🔊', 'Mówię...');
+  showLastText(welcomeText);
+  speak(welcomeText, true, () => {
+    if (dialogActive) startListening();
+  });
+}
+
+function stopDialog() {
+  dialogActive = false;
+  state = "STOPPING";
+  clearTimeout(silenceTimer);
+  speechSynthesis.cancel();
+  if (recognition) {
+    try { recognition.abort(); } catch (_err) { /* already stopped */ }
+    recognition = null;
+  }
+  document.getElementById('dialog-screen').style.display = 'none';
+  document.getElementById('promo-screen').style.display = 'flex';
+  state = "PROMO";
+  startPromo();
+}
+
+function onRingClick() {
+  if (state === "LISTENING" && recognition) {
+    try { recognition.stop(); } catch (_err) { /* already stopped */ }
+  } else if (state === "SPEAKING") {
+    speechSynthesis.cancel();
+  }
+}
+
+function startListening() {
+  if (!dialogActive) return;
+  state = "LISTENING";
+  setStatus('listening', '🎤', 'Słucham...');
+  showLastText('Mów — jestem gotowy!');
+
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRec) {
+    showLastText('❌ Ta przeglądarka nie obsługuje mowy. Użyj Chrome lub Edge.');
+    return;
+  }
+
+  recognition = new SpeechRec();
+  recognition.lang = 'pl-PL';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+  let hasResult = false;
+
+  clearTimeout(silenceTimer);
+  silenceTimer = setTimeout(() => {
+    if (state === "LISTENING" && recognition) {
+      try { recognition.stop(); } catch (_err) { /* already stopped */ }
+    }
+  }, 8000);
+
+  recognition.onresult = (e) => {
+    hasResult = true;
+    clearTimeout(silenceTimer);
+    const text = e.results[0][0].transcript;
+    recognition = null;
+    handleUserSpeech(text);
+  };
+
+  recognition.onerror = (e) => {
+    clearTimeout(silenceTimer);
+    hasResult = true; // prevent onend from restarting, we handle it here
+    recognition = null;
+    if (!dialogActive) return;
+    if (e.error === 'not-allowed') {
+      showLastText('❌ Zezwól na dostęp do mikrofonu w przeglądarce.');
+    } else if (dialogActive) {
+      startListening();
+    }
+  };
+
+  recognition.onend = () => {
+    clearTimeout(silenceTimer);
+    if (!hasResult && state === "LISTENING" && dialogActive) {
+      recognition = null;
+      startListening();
+    }
+  };
+
+  try {
+    recognition.start();
+  } catch (_err) {
+    if (dialogActive) setTimeout(startListening, 300);
+  }
+}
+
+function handleUserSpeech(text) {
+  if (!dialogActive) return;
+  showLastText('👤 ' + text);
+  state = "SPEAKING";
+  setStatus('speaking', '🔊', 'Mówię...');
+
+  const resp = getResponse(text);
+  const goodbye = isGoodbye(text);
+
+  setTimeout(() => {
+    showLastText(resp);
+    speak(resp, true, () => {
+      if (!dialogActive) return;
+      if (goodbye) {
+        setTimeout(stopDialog, 800);
+      } else {
+        startListening();
+      }
+    });
+  }, 200);
+}
+
+function showLastText(txt) {
+  const el = document.getElementById('last-text');
+  el.style.opacity = '0';
+  setTimeout(() => { el.textContent = txt; el.style.opacity = '1'; }, 200);
+}
+
+function setStatus(cls, icon, label) {
+  const ring = document.getElementById('status-ring');
+  ring.className = 'status-ring ' + cls;
+  document.getElementById('mic-icon').textContent = icon;
+  document.getElementById('status-label').textContent = label;
+}
+
+// ========== INIT ==========
+window.onload = () => {
+  renderMenu();
+  if (window.speechSynthesis) {
+    speechSynthesis.getVoices();
+    speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+  }
+  setTimeout(() => {
+    speak(PROMO_TEXTS[0].replace(/[🏺🎉🔥🍯🚚💬⏰]/gu,'').trim(), state === "PROMO");
+    promoTimer = setTimeout(nextPromo, 14000);
+  }, 1500);
+};
+</script>
+</body>
+</html>

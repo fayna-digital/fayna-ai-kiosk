@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+
+# Virtual environment
+venv/
+venv311/
+.venv/
+
+# Environment & secrets
+.env
+.env.*
+secrets.env
+*.pem
+*.key
+*.crt
+*_token*
+
+# AI models and binaries (large — download separately per README)
+src/assets/models/
+
+# Runtime-generated data
+data/leads.db
+local_leads.db
+*.log
+logs/
+
+# Temp audio
+temp_tts.wav
+*.wav
+*.mp3
+
+# Tool caches
+.ruff_cache/
+.pytest_cache/
+.mypy_cache/
+
+# macOS
+.DS_Store
+.AppleDouble
+
+# IDE
+.vscode/
+.idea/

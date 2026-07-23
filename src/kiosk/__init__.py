@@ -1,0 +1,1 @@
+"""Kiosk fullscreen display management."""

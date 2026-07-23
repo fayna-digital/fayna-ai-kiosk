@@ -1,0 +1,101 @@
+{
+  "restaurant": {
+    "name": "Bar Przykład",
+    "cuisine": "ormiańska",
+    "assistant_name": "Zosia",
+    "greeting": "Dzień dobry! Witam w Bar Przykład. Nazywam się Zosia. Opowiedzieć o naszych pasztecikach?",
+    "about": "Bar Przykład to przykładowa (demonstracyjna) ormiańska przekąskownia dla systemu AI Kiosk. Wszystkie dane są fikcyjne.",
+    "hours": "Jesteśmy otwarci codziennie od 8:00 do 22:00.",
+    "address": "ul. Przykładowa 1, 00-000 Miasto Demo.",
+    "phone": "+48 000 000 000",
+    "delivery": "Dowozimy na terenie miasta za 10 zł.",
+    "payment": "Płacić można gotówką, kartą lub blikiem.",
+    "sauces": "Wszystkie sosy robimy sami: jogurtowo-miętowy, pomidorowy (ostry) i czosnkowo-koperkowy."
+  },
+  "dishes": [
+    {
+      "id": "pastry_mushroom",
+      "name": "Pasztecik z grzybami",
+      "price": 8,
+      "category": "słony",
+      "spice_level": 5,
+      "description": "Pieczarki, najbardziej pikantne i pieprzne.",
+      "ingredients": ["ciasto", "pieczarki"],
+      "allergens": ["gluten"]
+    },
+    {
+      "id": "pastry_beef",
+      "name": "Pasztecik z wołowiną",
+      "price": 8,
+      "category": "słony",
+      "spice_level": 4,
+      "description": "Soczysta wołowina duszona z cebulą w cieście.",
+      "ingredients": ["ciasto", "wołowina", "cebula"],
+      "allergens": ["gluten"]
+    },
+    {
+      "id": "pastry_potato",
+      "name": "Pasztecik ziemniaczany",
+      "price": 8,
+      "category": "słony",
+      "spice_level": 3,
+      "description": "Ziemniaki z ziołami i czosnkiem — klasyk.",
+      "ingredients": ["ciasto", "ziemniaki", "zioła", "czosnek"],
+      "allergens": ["gluten"]
+    },
+    {
+      "id": "pastry_cabbage",
+      "name": "Pasztecik z kapustą",
+      "price": 8,
+      "category": "słony",
+      "spice_level": 2,
+      "description": "Świeża kapusta, nie kiszona. Najmniej kaloryczny.",
+      "ingredients": ["ciasto", "kapusta"],
+      "allergens": ["gluten"]
+    },
+    {
+      "id": "pastry_lentil",
+      "name": "Pasztecik soczewicowy",
+      "price": 8,
+      "category": "słony",
+      "spice_level": 1,
+      "description": "Soczewica. Najbardziej aromatyczny, najlepszy dla dzieci.",
+      "ingredients": ["ciasto", "soczewica"],
+      "allergens": ["gluten"]
+    },
+    {
+      "id": "pastry_nutella",
+      "name": "Pasztecik z nutellą",
+      "price": 8,
+      "category": "słodki",
+      "spice_level": 0,
+      "description": "Słodki pasztecik z kremem czekoladowo-orzechowym.",
+      "ingredients": ["ciasto", "krem czekoladowo-orzechowy"],
+      "allergens": ["gluten", "orzechy", "mleko", "soja"]
+    },
+    {
+      "id": "pastry_curd_honey",
+      "name": "Pasztecik z twarogiem i miodem",
+      "price": 8,
+      "category": "słodki",
+      "spice_level": 0,
+      "description": "Twaróg i miód — tradycyjny słodki wariant.",
+      "ingredients": ["ciasto", "twaróg", "miód"],
+      "allergens": ["gluten", "mleko"]
+    }
+  ],
+  "faq": {
+    "polecacie": "Polecam pasztecik soczewicowy dla łagodnych smaków albo z grzybami dla miłośników ostrości. Ze słodkich — z twarogiem i miodem!",
+    "godziny": "Jesteśmy czynni codziennie 8:00–22:00. Wpadaj!",
+    "adres": "ul. Przykładowa 1, Miasto Demo — czekamy!",
+    "dowóz": "Dowozimy za 10 zł na terenie miasta. Zadzwoń: +48 000 000 000."
+  },
+  "challenge": {
+    "name": "Wielkie Wyzwanie",
+    "goal": "Zjedzenie wyznaczonej liczby pasztecików (ok. 100 g każdy) w czasie. Start: 10 sztuk w 15 minut. Po każdym sukcesie poprzeczka rośnie o +1.",
+    "min_age": 16,
+    "rules": "1 podejście w tygodniu. Zgłoszenia dzień wcześniej. Popijać można tylko napojami z lokalu.",
+    "reward": "Zestaw jest darmowy, wpis na Ścianę Chwały i dyplom.",
+    "penalty": "W przypadku niepowodzenia (lub niedokończenia) uczestnik płaci za zestaw."
+  }
+}

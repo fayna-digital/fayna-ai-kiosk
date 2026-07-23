@@ -1,0 +1,15 @@
+[Unit]
+Description=AI Kiosk voice assistant
+After=graphical.target sound.target
+
+[Service]
+Type=simple
+User=kiosk
+WorkingDirectory=/home/kiosk/ai-kiosk
+Environment=DISPLAY=:0
+ExecStart=/home/kiosk/ai-kiosk/venv/bin/python3 -m src.main
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=graphical.target

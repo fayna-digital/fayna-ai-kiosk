@@ -1,0 +1,9 @@
+# AI Kiosk — runtime dependencies (100% offline)
+
+# Offline speech-to-text
+vosk>=0.3.44
+pyaudio>=0.2.14
+
+# Offline neural text-to-speech
+# Requires Python 3.11 — onnxruntime has no Python 3.13+ wheels yet.
+piper-tts>=1.2.0

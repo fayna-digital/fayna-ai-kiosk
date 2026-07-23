@@ -1,0 +1,1 @@
+"""AI Kiosk application package."""
