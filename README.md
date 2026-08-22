@@ -101,7 +101,7 @@ ai-kiosk/
 ### Install
 
 ```bash
-git clone https://github.com/fayna-digital/ai-kiosk.git
+git clone https://github.com/fayna-digital/fayna-ai-kiosk.git
 cd ai-kiosk
 
 # macOS: install Python 3.11 if needed

@@ -1,5 +1,5 @@
 [project]
-name = "ai-kiosk"
+name = "fayna-ai-kiosk"
 version = "0.1.0"
 description = "AI Kiosk — 100% offline voice kiosk (Vosk STT / Piper TTS / Tkinter)"
 readme = "README.md"
