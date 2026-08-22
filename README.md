@@ -1,4 +1,4 @@
-# AI Kiosk — Offline Voice Assistant for Point of Sale
+# AI Kiosk — Offline'owy Asystent Głosowy dla Punktu Obsługi
 
 ![Python](https://img.shields.io/badge/Python-3.11+-blue)
 ![STT](https://img.shields.io/badge/STT-Vosk%20Offline-red)
@@ -6,35 +6,34 @@
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 ![Status](https://img.shields.io/badge/status-demo%20%2F%20portfolio-orange)
 
-**Developed by [Fayna Digital](https://fayna.agency) — Author: Volodymyr Shevchenko**
+**Opracowane przez [Fayna Digital](https://fayna.agency) — Autor: Volodymyr Shevchenko**
 
 ---
 
-An autonomous voice-driven kiosk for trade fairs and small venues: it listens
-for Polish speech, understands natural questions about a menu, prices and
-promotions, and answers with a neural voice — **100% offline**, no cloud APIs,
-no ongoing subscription cost.
+Autonomiczny kiosk głosowy dla targów i małych punktów obsługi: nasłuchuje
+polskiej mowy, rozumie naturalne pytania o menu, ceny i promocje, a odpowiada
+neuralnym głosem — **w 100% offline**, bez API chmurowych i bez abonamentu.
 
-> ⚠️ **Demo configuration.** The repository ships with data for a **fictional**
-> Armenian snack bar, "Bar Przykład" (`przykład` = Polish for "example") — every
-> name, address, phone number and dish is made up. Onboarding a real venue only
-> means editing `data/knowledge.json` — no code changes required. Real client
-> data (conversation recordings, an actual menu, contacts) never lives in this
-> repository.
+> ⚠️ **Konfiguracja demo.** Repozytorium zawiera dane dla **fikcyjnego**
+> ormiańskiego baru przekąskowego „Bar Przykład" (`przykład` = po polsku
+> „example") — każda nazwa, adres, numer telefonu i danie są zmyślone.
+> Wdrożenie realnego punktu polega tylko na edycji `data/knowledge.json` — bez
+> zmian w kodzie. Prawdziwe dane klienta (nagrania rozmów, realne menu,
+> kontakty) nigdy nie znajdują się w tym repozytorium.
 
-## Key Features
+## Kluczowe funkcje
 
-| Feature | Implementation |
+| Funkcja | Implementacja |
 |---|---|
-| Offline Speech Recognition | [Vosk](https://alphacephei.com/vosk/) with a Polish language model |
-| Offline Neural Text-to-Speech | [Piper TTS](https://github.com/rhasspy/piper) — VITS model `pl_PL-gosia-medium`, no internet required |
-| NLP Engine | Deterministic rule-based keyword matcher over `data/knowledge.json` (zero hallucinations) |
-| UI | Tkinter fullscreen kiosk mode (no browser dependency) |
-| Business Rules | Hardcoded allergen data, age validation, forbidden topics — the model cannot invent answers |
-| Promo Loop | Background thread plays random promotions between interactions |
-| Continuous Dialog | Multi-turn conversation — several questions per session |
+| Offline'owe rozpoznawanie mowy | [Vosk](https://alphacephei.com/vosk/) z polskim modelem językowym |
+| Offline'owa neuronowa synteza mowy | [Piper TTS](https://github.com/rhasspy/piper) — model VITS `pl_PL-gosia-medium`, bez internetu |
+| Silnik NLP | Deterministyczny dopasowywacz słów kluczowych po `data/knowledge.json` (zero halucynacji) |
+| UI | Pełnoekranowy tryb kiosku Tkinter (bez zależności od przeglądarki) |
+| Reguły biznesowe | Zahardkodowane dane alergenów, walidacja wieku, tematy zabronione — model nie może wymyślać odpowiedzi |
+| Pętla promocyjna | Wątek w tle odtwarza losowe promocje między interakcjami |
+| Dialog ciągły | Rozmowa wieloetapowa — kilka pytań w jednej sesji |
 
-## Architecture
+## Architektura
 
 ```
 ┌─────────────────────────────────────────────────┐
@@ -44,67 +43,60 @@ no ongoing subscription cost.
 │  │  (Vosk)  │→ │ (keywords) │→ │  (Piper)    │  │
 │  └──────────┘  └────────────┘  └─────────────┘  │
 │                                                  │
-│  Modes: PROMO ←→ DIALOG                          │
-│  PROMO: background promo loop (TTS every 15s)    │
-│  DIALOG: listen → match → speak → loop           │
+│  Tryby: PROMO ←→ DIALOG                          │
+│  PROMO: pętla promocyjna w tle (TTS co 15 s)     │
+│  DIALOG: słuchaj → dopasuj → mów → pętla         │
 └─────────────────────────────────────────────────┘
 ```
 
-**Dialog flow:**
-1. Visitor presses START.
-2. Kiosk says: *"Słucham, w czym mogę pomóc?"*
-3. STT listens → Vosk transcribes Polish speech.
-4. NLP matches keywords against `data/knowledge.json` → deterministic response (no LLM).
-5. TTS speaks the response via Piper → `afplay` (macOS) / `aplay` (Linux).
-6. Loop continues until: goodbye phrase detected, 15s inactivity, or STOP pressed.
+**Przebieg dialogu:**
+1. Gość naciska START.
+2. Kiosk mówi: *„Słucham, w czym mogę pomóc?"*
+3. STT nasłuchuje → Vosk transkrybuje polską mowę.
+4. NLP dopasowuje słowa kluczowe do `data/knowledge.json` → deterministyczna odpowiedź (bez LLM).
+5. TTS odtwarza odpowiedź przez Piper → `afplay` (macOS) / `aplay` (Linux).
+6. Pętla wraca do trybu nasłuchu.
 
-## Project Structure
+## Struktura projektu
 
 ```
-ai-kiosk/
 ├── src/
-│   ├── main.py                  # Entry point — VoiceKioskApp (Tkinter)
-│   ├── config/
-│   │   ├── settings.py          # Safety-critical rules: allergens, age limits
-│   │   └── knowledge.py         # Loads data/knowledge.json (per-venue facts)
-│   ├── nlp/
-│   │   └── processor.py         # Keyword-based NLP — 15+ intent categories
-│   ├── stt/
-│   │   └── engine.py            # Vosk offline STT engine (Polish)
-│   ├── tts/
-│   │   └── engine.py            # Piper neural TTS engine
-│   └── kiosk/
-│       └── kiosk_mode.py        # Optional Chromium companion display (Linux)
+│   ├── main.py                 # Wejście aplikacji, pętla kiosku
+│   ├── stt_engine.py           # Rozpoznawanie mowy (Vosk)
+│   ├── nlp_processor.py        # Dopasowywanie intencji (słowa kluczowe)
+│   ├── tts_engine.py           # Synteza mowy (Piper)
+│   ├── config/settings.py      # Reguły krytyczne dla bezpieczeństwa
+│   └── assets/models/          # Modele Vosk + Piper (pobierane)
 ├── tests/
-│   └── test_nlp.py              # Unit tests — no audio hardware needed
+│   ├── test_stt.py             # Testy rozpoznawania mowy
+│   ├── test_nlp.py             # Testy silnika NLP
+│   └── test_tts.py             # Ręczna kontrola głośnika (wymaga sprzętu)
 ├── scripts/
-│   ├── manual_test_stt.py       # Manual mic check (needs hardware)
-│   ├── manual_test_tts.py       # Manual speaker check (needs hardware)
-│   ├── install-kiosk.sh         # systemd service installer (Linux/Raspberry Pi)
-│   └── ai-kiosk.service         # systemd unit file
+│   ├── install-kiosk.sh        # Instalator usługi systemd (Linux/Raspberry Pi)
+│   └── ai-kiosk.service        # Plik jednostki systemd
 ├── docs/
 │   └── 01_architecture_decisions.md
 ├── data/
-│   └── knowledge.json           # Single source of truth: venue, menu, FAQ
-├── index.html                   # Static web menu page (no server needed)
+│   └── knowledge.json          # Jedno źródło prawdy: punkt, menu, FAQ
+├── index.html                  # Statyczna strona menu (bez serwera)
 └── requirements.txt
 ```
 
-## Setup
+## Instalacja
 
-### Requirements
+### Wymagania
 
-- **Python 3.11** (required — `piper-tts` depends on `onnxruntime`, which has no Python 3.13+ wheels yet)
-- macOS (`afplay`) or Linux (`aplay` from `alsa-utils`)
-- Microphone
+- **Python 3.11** (wymagany — `piper-tts` zależy od `onnxruntime`, który nie ma jeszcze wheeli dla Pythona 3.13+)
+- macOS (`afplay`) lub Linux (`aplay` z `alsa-utils`)
+- Mikrofon
 
-### Install
+### Instalacja
 
 ```bash
 git clone https://github.com/fayna-digital/fayna-ai-kiosk.git
-cd ai-kiosk
+cd fayna-ai-kiosk
 
-# macOS: install Python 3.11 if needed
+# macOS: zainstaluj Python 3.11, jeśli potrzeba
 brew install python@3.11 espeak-ng
 
 python3.11 -m venv venv
@@ -112,7 +104,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### Download the Vosk Polish model (STT)
+### Pobranie polskiego modelu Vosk (STT)
 
 ```bash
 mkdir -p src/assets/models/vosk-model-pl
@@ -122,7 +114,7 @@ mv src/assets/models/vosk-model-small-pl-0.22 src/assets/models/vosk-model-pl
 rm vosk.zip
 ```
 
-### Download the Piper Polish voice model (TTS)
+### Pobranie polskiego modelu głosu Piper (TTS)
 
 ```bash
 mkdir -p src/assets/models/piper
@@ -132,65 +124,66 @@ curl -L -o src/assets/models/piper/pl_PL-gosia-medium.onnx.json \
   "https://huggingface.co/rhasspy/piper-voices/resolve/main/pl/pl_PL/gosia/medium/pl_PL-gosia-medium.onnx.json"
 ```
 
-> Model size: ~60 MB. Alternative voice (male): replace `gosia` with `mc_speech`.
+> Rozmiar modelu: ~60 MB. Alternatywny głos (męski): zamień `gosia` na `mc_speech`.
 
-### Run
+### Uruchomienie
 
 ```bash
 source venv/bin/activate
 python3 -m src.main
 ```
 
-Tests:
+Testy:
 
 ```bash
 python3 -m pytest tests/ -v
 ```
 
-## Configuration
+## Konfiguracja
 
-Two layers, deliberately kept apart:
+Dwie warstwy, celowo rozdzielone:
 
-- **`data/knowledge.json`** — everything specific to a venue: name, hours,
-  address, phone, menu, FAQ, challenge rules. Onboarding a new venue means
-  editing this file only.
-- **`src/config/settings.py`** — safety-critical rules that must never be
-  inferred by a model: hardcoded allergen table, minimum age for the tasting
-  challenge, forbidden topics, audio/UI tuning.
+- **`data/knowledge.json`** — wszystko, co dotyczy punktu: nazwa, godziny,
+  adres, telefon, menu, FAQ, zasady wyzwania. Wdrożenie nowego punktu oznacza
+  edycję tylko tego pliku.
+- **`src/config/settings.py`** — reguły krytyczne dla bezpieczeństwa, których
+  model nigdy nie może wnioskować: zahardkodowana tabela alergenów, minimalny
+  wiek do wyzwania degustacyjnego, tematy zabronione, strojenie audio/UI.
 
 ```python
-FULLSCREEN_MODE = True      # Lock to fullscreen (kiosk mode)
-HIDE_CURSOR = True          # Hide the mouse cursor
-NOISE_GATE_THRESHOLD = 500  # Adjust for venue ambient noise
-ENABLE_BARGE_IN = True      # Visitor can interrupt TTS playback
-MIN_AGE_RECORD = 16         # Tasting-challenge age restriction (hardcoded)
+FULLSCREEN_MODE = True      # Blokada pełnoekranowa (tryb kiosku)
+HIDE_CURSOR = True          # Ukrycie kursora myszy
+NOISE_GATE_THRESHOLD = 500  # Dostrojenie do hałasu otoczenia
+ENABLE_BARGE_IN = True      # Gość może przerwać odtwarzanie TTS
+MIN_AGE_RECORD = 16         # Ograniczenie wieku wyzwania (zahardkodowane)
 UNKNOWN_RESPONSE = "Nie znam odpowiedzi, zapytaj operatora."
 ```
 
-Allergen data is **hardcoded** (not AI-generated) to prevent hallucinations —
-see [docs/01_architecture_decisions.md](docs/01_architecture_decisions.md).
+Dane alergenów są **zahardkodowane** (nie generowane przez AI), aby zapobiec
+halucynacjom — patrz [docs/01_architecture_decisions.md](docs/01_architecture_decisions.md).
 
-## NLP — Supported Intents
+## NLP — Obsługiwane intencje
 
-The keyword engine covers 15+ intent categories, all answered from `data/knowledge.json`:
+Silnik słów kluczowych pokrywa 15+ kategorii intencji, wszystkie odpowiadane
+z `data/knowledge.json`:
 
-| Intent | Example query | Response |
+| Intencja | Przykładowe pytanie | Odpowiedź |
 |---|---|---|
-| Greeting | *cześć, hej* | Welcome message |
-| Menu list | *co macie, jakie smaki* | Full menu with price |
-| Price | *ile kosztuje, cena* | Price per item |
-| What is a pastry | *co to jest* | Product description |
-| Recommendation | *co polecasz, co wziąć* | Taste-based suggestion |
-| Spicy/mild | *ostre, pikantne* | Spice-level guide |
-| Children | *dla dzieci, dziecko* | Safe recommendation |
-| Allergens | *alergen, gluten, orzechy* | Hardcoded safe answer |
-| Opening hours | *godziny, otwarte* | From venue data |
-| Address | *gdzie, adres, ulica* | From venue data |
-| Delivery | *dowóz, dostawa* | Delivery info |
-| Challenge | *wyzwanie, rekord* | Rules + age warning |
-| Goodbye | *dziękuję, do widzenia* | Farewell + session end |
+| Powitanie | *cześć, hej* | Wiadomość powitalna |
+| Lista menu | *co macie, jakie smaki* | Pełne menu z ceną |
+| Cena | *ile kosztuje, cena* | Cena za pozycję |
+| Co to za wypiek | *co to jest* | Opis produktu |
+| Rekomendacja | *co polecasz, co wziąć* | Sugestia na podstawie smaku |
+| Ostre/łagodne | *ostre, pikantne* | Przewodnik po poziomie ostrości |
+| Dla dzieci | *dla dzieci, dziecko* | Bezpieczna rekomendacja |
+| Alergeny | *alergen, gluten, orzechy* | Zahardkodowana bezpieczna odpowiedź |
+| Godziny otwarcia | *godziny, otwarte* | Z danych punktu |
+| Adres | *gdzie, adres, ulica* | Z danych punktu |
+| Dostawa | *dowóz, dostawa* | Informacje o dostawie |
+| Wyzwanie | *wyzwanie, rekord* | Zasady + ostrzeżenie o wieku |
+| Pożegnanie | *dziękuję, do widzenia* | Pożegnanie + koniec sesji |
 
-## Deployment (Linux / Raspberry Pi)
+## Wdrożenie (Linux / Raspberry Pi)
 
 ```bash
 sudo bash scripts/install-kiosk.sh
@@ -198,33 +191,33 @@ sudo systemctl status ai-kiosk
 journalctl -u ai-kiosk -f
 ```
 
-The service auto-restarts on failure and starts at boot.
+Usługa automatycznie restartuje się po awarii i startuje przy starcie systemu.
 
-## Architecture Decisions
+## Decyzje architektoniczne
 
-See [docs/01_architecture_decisions.md](docs/01_architecture_decisions.md) for the full ADR covering:
-- Why offline STT (Vosk) over cloud (Google/Whisper)
-- Why deterministic NLP over an LLM
-- Why Piper TTS over cloud-dependent alternatives
-- Noise-gate strategy for trade-fair environments
-- GDPR/RODO-compliant, opt-in lead collection
+Patrz [docs/01_architecture_decisions.md](docs/01_architecture_decisions.md) po pełny ADR obejmujący:
+- Dlaczego offline'owy STT (Vosk) zamiast chmury (Google/Whisper)
+- Dlaczego deterministyczne NLP zamiast LLM
+- Dlaczego Piper TTS zamiast zależnych od chmury alternatyw
+- Strategia bramki szumów dla środowisk targowych
+- Zgodne z GDPR/RODO, opcjonalne zbieranie leadów
 
-## Business Context
+## Kontekst biznesowy
 
-**Use case:** hands-free customer service at a busy market or trade-fair stand.
-**Problem solved:** staff cannot simultaneously serve customers and answer
-repetitive questions.
-**Result:** handles FAQ traffic autonomously, freeing staff for upselling.
-This engine was extracted and anonymized from a real client deployment via
-Fayna's Project Sunset procedure — see [CHANGELOG.md](CHANGELOG.md).
+**Przypadek użycia:** obsługa klienta bez użycia rąk na ruchliwym targu lub
+stoisku. **Rozwiązany problem:** personel nie może jednocześnie obsługiwać
+klientów i odpowiadać na powtarzalne pytania. **Efekt:** autonomicznie obsługuje
+ruch FAQ, uwalniając personel do sprzedaży. Ten silnik został wyodrębniony
+i zanonimizowany z realnego wdrożenia klienckiego procedurą Project Sunset
+Fayna — patrz [CHANGELOG.md](CHANGELOG.md).
 
-## License
+## Licencja
 
-MIT — see [LICENSE](LICENSE). © Fayna Digital.
+MIT — patrz [LICENSE](LICENSE). © Fayna Digital.
 
-## Built by
+## Wykonane przez
 
-**Fayna Digital** — Systems architecture & AI automation agency
+**Fayna Digital** — agencja architektury systemów i automatyzacji AI
 [fayna.agency](https://fayna.agency) · [github.com/fayna-digital](https://github.com/fayna-digital)
 
-> Core Tech: Python 3.11 · Vosk · Piper TTS · Tkinter · 100% offline architecture
+> Core Tech: Python 3.11 · Vosk · Piper TTS · Tkinter · architektura w 100% offline
